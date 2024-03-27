@@ -1,0 +1,393 @@
+Technical Documentation for the SVG Manipulator App using ReactJs
+
+
+NOTE: This app currently does not un as expected as there were some unexpeted errors while running in the browser. But the file will successfully compile and run the webpacks on the machine. As soon as the app starts running in the browser, the webpacks bundle (bundle.js) show that the error is present in the browser console.
+
+The specific error is,
+```
+	The above error occurred in the <App> component:
+
+    		at App (http://localhost:3000/static/js/bundle.js:81:80)
+
+	Consider adding an error boundary to your tree to customize error handling behavior.
+	Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+```
+
+And the given line of code at this file -: /static/js/bundle.js:81:80 (in the browser),
+```
+	const [svgData, setSvgData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null);
+```
+
+
+Purpose and Functionalities of SVG Manipulator app
+
+1. **React Imports:**
+   - `import React, { useState, useEffect, useRef, useCallback } from 'react';`: Imports necessary React hooks for state management (`useState`, `useEffect`, `useRef`, `useCallback`).
+
+2. **Fabric.js Import:**
+   - `import { fabric } from 'fabric';`: Imports the Fabric.js library for canvas manipulation.
+
+3. **CSS Import:**
+   - `import './App.css';`: Imports the CSS file for styling the application.
+
+4. **Functional Component:**
+   - `function App() { ... }`: Defines the main functional component `App`.
+
+5. **State Declarations:**
+   - `useState` hooks are used to manage various state variables like `svgData`, `scaleFactor`, `rotationAngle`, `translation`, `dragging`, `dragStart`, `undoStack`, and `redoStack`.
+
+6. **Refs:**
+   - `useRef` is used to create refs for `svgContainerRef`, `canvasRef`, `undoStackRef`, `redoStackRef`, and `isDrawingModeRef`.
+
+7. **File Upload Handler:**
+   - `handleFileUpload(event)`: Function to handle file upload and set SVG data.
+
+8. **Element Transformation Handler:**
+   - `handleElementTransform(transformType, value)`: Function to handle scaling, rotation, and translation of active canvas object.
+
+9. **Canvas Size Adjustment Function:**
+   - `adjustCanvasSize()`: Function to adjust canvas size based on window dimensions.
+
+10. **Toggle Drawing Mode Function:**
+    - `toggleDrawingMode()`: Function to toggle drawing mode on the canvas.
+
+11. **Handle Mouse Move with useCallback:**
+    - `handleMouseMove(event)`: Memoized function to handle mouse movement for translation.
+
+12. **Effect for Canvas Initialization:**
+    - `useEffect(() => { ... }, [handleMouseMove])`: Initializes canvas, sets up drawing mode, path editing, undo/redo functionalities, zoom, and translation.
+
+13. **Undo Function:**
+    - `handleUndo()`: Function to undo the last action on the canvas.
+
+14. **Redo Function:**
+    - `handleRedo()`: Function to redo the last undone action on the canvas.
+
+15. **Handle Mouse Down Function:**
+    - `handleMouseDown(event)`: Function to handle mouse down event for dragging.
+
+16. **Handle Mouse Up Function:**
+    - `handleMouseUp()`: Function to handle mouse up event to stop dragging.
+
+17. **Effect for SVG Container Interaction:**
+    - `useEffect(() => { ... }, [scaleFactor, handleMouseMove])`: Sets up event listeners for mouse interactions on the SVG container.
+
+18. **Handle Export Function:**
+    - `handleExport()`: Function to export the canvas content as an SVG file.
+
+19. **Return JSX:**
+    - Returns JSX elements including file input, SVG container, canvas, control buttons, and their event handlers.
+
+
+
+Explaning each code blocks
+
+
+Breaking down the code, block by block and explaining each part:
+
+
+1.
+### ErrorBoundary Component Definition
+```jsx
+class ErrorBoundary extends React.Component {
+  // Constructor and methods for error boundary component
+}
+```
+- Defines a class-based React component `ErrorBoundary` to catch errors in its children.
+- Implements methods like `getDerivedStateFromError` and `componentDidCatch` to handle errors.
+
+
+2.
+### AppWithBoundary Component
+```jsx
+const AppWithBoundary = () => (
+  <ErrorBoundary>
+    <App />
+  </ErrorBoundary>
+);
+```
+- Wraps the `App` component with the `ErrorBoundary` component to catch any errors that occur within `App`.
+
+
+3.
+### App Component Definition
+```jsx
+function App() {
+  // Component code goes here
+}
+```
+- Defines the main functional component `App`.
+
+
+4.
+### State Declarations
+```jsx
+const [svgData, setSvgData] = useState(null);
+const [scaleFactor, setScaleFactor] = useState(1);
+const [rotationAngle, setRotationAngle] = useState(0);
+const [translation, setTranslation] = useState({ x: 0, y: 0 });
+const [dragging, setDragging] = useState(false);
+const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+const [undoStack, setUndoStack] = useState([]);
+const [redoStack, setRedoStack] = useState([]);
+```
+- Declares state variables using the `useState` hook.
+- Manages various aspects of the application's state such as SVG data, scaling factor, rotation angle, translation, dragging state, drag start position, and undo/redo stacks.
+
+
+5.
+### Refs
+```jsx
+const svgContainerRef = useRef(null);
+const canvasRef = useRef(null);
+const isDrawingModeRef = useRef(false);
+```
+- Declares refs using the `useRef` hook.
+- Used to reference DOM elements (`svgContainerRef`, `canvasRef`) and to maintain mutable variables (`isDrawingModeRef`).
+
+The above explanation covers the initial setup of the components, state declarations, and refs.
+
+
+6.
+### File Upload Handler
+```jsx
+const handleFileUpload = (event) => {
+  // Function to handle file upload
+};
+```
+- Defines a function `handleFileUpload` to handle file upload events.
+- Reads the uploaded file and sets the SVG data using `setSvgData`.
+
+
+7.
+### Element Transformation Handler
+```jsx
+const handleElementTransform = (transformType, value) => {
+  // Function to handle element transformation (scale, rotate, translate)
+};
+```
+- Defines a function `handleElementTransform` to handle scaling, rotation, and translation of the active canvas object.
+- Uses a switch statement to determine the type of transformation (`scale`, `rotate`, `translate`) and applies the transformation accordingly.
+
+
+8.
+### Canvas Size Adjustment Function
+```jsx
+const adjustCanvasSize = () => {
+  // Function to adjust canvas size based on window dimensions
+};
+```
+- Defines a function `adjustCanvasSize` to adjust the size of the canvas based on window dimensions.
+- Sets the width and height of the canvas to match the scaled window dimensions.
+
+
+9.
+### Toggle Drawing Mode Function
+```jsx
+const toggleDrawingMode = () => {
+  // Function to toggle drawing mode on the canvas
+};
+```
+- Defines a function `toggleDrawingMode` to toggle the drawing mode on the canvas.
+- Toggles the `isDrawingMode` property of the canvas.
+
+The above explanation covers the functions related to handling file uploads, element transformations, canvas size adjustment, and toggling drawing mode.
+
+
+10.
+### Handle Mouse Move with useCallback
+```jsx
+const handleMouseMove = useCallback((event) => {
+  // Function to handle mouse movement for translation
+}, [dragging, dragStart, setTranslation]);
+```
+- Defines a memoized callback function `handleMouseMove` to handle mouse movement for translation.
+- Updates the translation state based on mouse movement if dragging is true.
+
+
+11.
+### Canvas Initialization Effect
+```jsx
+useEffect(() => {
+  // Effect to set up canvas and its functionalities
+}, [handleMouseMove]);
+```
+- Sets up the canvas and its functionalities within a `useEffect` hook.
+- Initializes Fabric.js canvas instance, sets drawing mode, path editing, undo/redo functionalities, zoom, and translation.
+- Listens to keydown events for zoom and translation adjustments.
+- Cleans up event listeners on component unmount.
+
+
+12.
+### Undo Function
+```jsx
+const handleUndo = () => {
+  // Function to undo the last action on the canvas
+};
+```
+- Defines a function `handleUndo` to undo the last action on the canvas.
+- Removes the last object from the canvas and updates the undo and redo stacks accordingly.
+
+
+13.
+### Redo Function
+```jsx
+const handleRedo = () => {
+  // Function to redo the last undone action on the canvas
+};
+```
+- Defines a function `handleRedo` to redo the last undone action on the canvas.
+- Adds the last removed object back to the canvas and updates the undo and redo stacks accordingly.
+
+Above explainations covers the memoized mouse move handler, canvas initialization effect, undo, and redo functions.
+
+
+14.
+### Mouse Down and Mouse Up Handlers
+```jsx
+const handleMouseDown = (event) => {
+  // Function to handle the mouse down event for dragging
+};
+
+const handleMouseUp = () => {
+  // Function to handle the mouse up event to stop dragging
+};
+```
+- `handleMouseDown`: Defines a function to handle the mouse down event for dragging.
+  - Sets the dragging state to true and records the initial mouse position.
+- `handleMouseUp`: Defines a function to handle the mouse up event to stop dragging.
+  - Sets the dragging state to false.
+
+
+15.
+### SVG Container Interaction Effect
+```jsx
+useEffect(() => {
+  // Effect to set up event listeners for mouse interactions on the SVG container
+}, [scaleFactor, handleMouseMove]);
+```
+- Sets up event listeners for mouse interactions on the SVG container within a `useEffect` hook.
+- Listens to mouse down, move, and up events for dragging.
+- Applies transformations (scale, rotate, translate) to the SVG container based on state variables.
+
+
+16.
+### Handle Export Function
+```jsx
+const handleExport = () => {
+  // Function to export the canvas content as an SVG file
+};
+```
+- Defines a function `handleExport` to export the canvas content as an SVG file.
+- Converts canvas content to SVG format, creates a blob, and downloads it as an SVG file.
+
+This concludes the explanation of the remaining functions and effects in the SVG Manipulator app. Each function or effect serves a specific purpose in managing state, handling user interactions, or interacting with the canvas and SVG elements.
+
+
+17.
+```jsx
+return (
+  <div className="App">
+    {/* File upload input */}
+    <input type="file" accept=".svg" onChange={handleFileUpload} />
+
+    {/* Conditional rendering based on svgData */}
+    {svgData && (
+      <>
+        {/* SVG container with transformation */}
+        <div id="svg-container" style={{ transform: `scale(${scaleFactor}) rotate(${rotationAngle}deg) translate(${translation.x}px, ${translation.y}px)` }}>
+          <img src={svgData} alt="SVG" />
+        </div>
+
+        {/* Controls container */}
+        <div className="controls-container">
+          {/* Controls for scale, rotate, translate */}
+          {/* Scale input */}
+          <label htmlFor="scale">Scale:</label>
+          <input
+            type="number"
+            id="scale"
+            min="0.1"
+            max="2"
+            step="0.1"
+            value={scaleFactor}
+            onChange={(e) => {
+              const newScale = parseFloat(e.target.value);
+              const actualScale = newScale * 100;
+              setScaleFactor(newScale);
+              handleElementTransform("scale", actualScale);
+              adjustCanvasSize();
+            }}
+          />
+
+          {/* Rotate input */}
+          <label htmlFor="rotate">Rotate:</label>
+          <input
+            type="number"
+            id="rotate"
+            min="0"
+            max="360"
+            step="1"
+            value={rotationAngle}
+            onChange={(e) => {
+              const newAngle = parseFloat(e.target.value);
+              setRotationAngle(newAngle);
+              handleElementTransform("rotate", newAngle);
+            }}
+          />
+
+          {/* Translate inputs */}
+          <label htmlFor="translateX">Translate X:</label>
+          <input
+            type="number"
+            id="translateX"
+            value={translation.x}
+            onChange={(e) => {
+              const newX = parseFloat(e.target.value);
+              setTranslation((prev) => ({ ...prev, x: newX }));
+              handleElementTransform("translate", { x: newX, y: translation.y });
+            }}
+          />
+          <label htmlFor="translateY">Translate Y:</label>
+          <input
+            type="number"
+            id="translateY"
+            value={translation.y}
+            onChange={(e) => {
+              const newY = parseFloat(e.target.value);
+              setTranslation((prev) => ({ ...prev, y: newY }));
+              handleElementTransform("translate", { x: translation.x, y: newY });
+            }}
+          />
+        </div>
+
+        {/* Canvas element */}
+        <canvas className="myCanvas" ref={canvasRef}></canvas>
+
+        {/* Buttons for drawing mode, undo, redo, and export */}
+        <div className="top-right-buttons">
+          <button onClick={toggleDrawingMode}>
+            {isDrawingModeRef.current ? "Stop Drawing" : "Start Drawing"}
+          </button>
+          <button onClick={handleUndo}>Undo</button>
+          <button onClick={handleRedo}>Redo</button>
+          <button onClick={handleExport}>Save SVG</button>
+        </div>
+      </>
+    )}
+  </div>
+);
+```
+
+- This JSX structure represents the main UI of the SVG Manipulator app.
+- It includes:
+  - An input field for uploading SVG files.
+  - Conditional rendering based on the presence of `svgData`.
+  - The SVG container where the uploaded SVG is displayed, with transformations applied based on `scaleFactor`, `rotationAngle`, and `translation`.
+  - Controls for adjusting scale, rotation, and translation.
+  - A canvas element (`<canvas>`) where users can draw.
+  - Buttons for toggling drawing mode, undoing/redoing actions, and exporting the canvas content as an SVG file.
+
+This JSX structure defines the layout and functionality of the SVG Manipulator app's user interface. Users can interact with the controls to manipulate the SVG content and canvas drawing.
+
+
