@@ -1,4 +1,7 @@
+/* Base styles */
+
 .App {
+  position: relative;
   text-align: center;
 }
 
@@ -7,32 +10,89 @@
   pointer-events: none;
 }
 
+#svg-container {
+  overflow: hidden; /* Hide overflow */
+  transform-origin: top left; /* Adjust the origin for transformations */
+}
+
+#canvas-container {
+  height: calc(100vh - 100px); /* 100vh is the full viewport height, 100px accounts for the top and bottom margins */
+  width: 100%; /* Adjust as needed */
+  position: relative; /* This is important for positioning controls relative to the canvas */
+  border: 2px solid #000; /* Add border to the canvas container */
+}
+
+#controls-container {
+  position: absolute;
+  bottom: 0; /* Position at the bottom */
+  width: 100%; /* Stretch to fill the width of the canvas container */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* Style of undo, redo, and save buttons */
+.top-right-buttons {
+  position: absolute;
+  top: 10px;
+  right: 10px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  gap: 10px;
 }
 
-.App-link {
-  color: #61dafb;
+button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+button:hover {
+  background-color: #0056b3;
+}
+
+button:focus {
+  outline: none;
+}
+
+input[type="number"] {
+  width: 60px;
+}
+
+/* Responsive styles */
+
+/* Tablets and larger */
+@media (min-width: 768px) {
+  .App {
+    padding: 20px;
   }
-  to {
-    transform: rotate(360deg);
+}
+
+/* Desktops and larger */
+@media (min-width: 992px) {
+  .App {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  #canvas-container {
+    margin: 0 auto;
+  }
+}
+
+/* Large desktops and larger */
+@media (min-width: 1200px) {
+  .App {
+    padding: 40px;
   }
 }
